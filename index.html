@@ -193,7 +193,7 @@ footer.foot p { margin: 0; }
     <div class="badges" aria-label="Características">
       <span class="badge">Modelo RD 1112/2018</span>
       <span class="badge">Ley 11/2023 (EAA)</span>
-      <span class="badge">WCAG 2.1 AA · 50 criterios</span>
+      <span class="badge">WCAG 2.2 y 2.1 · niveles A y AA</span>
       <span class="badge">Tus datos no salen del navegador</span>
     </div>
   </header>
@@ -243,12 +243,20 @@ footer.foot p { margin: 0; }
         </fieldset>
 
         <fieldset>
-          <legend><span class="n">3</span> Autoevaluación WCAG 2.1 AA</legend>
+          <legend><span class="n">3</span> Autoevaluación WCAG</legend>
+          <div class="field">
+            <label for="version">Versión de referencia</label>
+            <select id="version" name="version" aria-describedby="versionHint">
+              <option value="22">WCAG 2.2, niveles A y AA (EN 301 549 V4.1.1)</option>
+              <option value="21">WCAG 2.1, niveles A y AA (UNE-EN 301549:2022)</option>
+            </select>
+            <p class="hint" id="versionHint">La EN 301 549 V4.1.1, publicada en septiembre de 2026, adopta WCAG 2.2. Elige 2.1 solo si tu evaluación se hizo con la versión anterior.</p>
+          </div>
           <p class="hint">Marca cada criterio según lo que hayas comprobado. Lo que quede <em>sin evaluar</em> cuenta como no conforme: es la forma prudente de declarar.</p>
           <div class="tally" aria-live="polite" id="tally"></div>
           <div class="verdict" id="verdict" aria-live="polite"></div>
           <div id="crits"></div>
-          <p class="hint">Los nombres de los criterios siguen la traducción habitual de WCAG 2.1, que recoge la norma UNE-EN 301549.</p>
+          <p class="hint">Los nombres de los criterios siguen la traducción habitual al español de WCAG.</p>
         </fieldset>
 
         <fieldset>
@@ -397,21 +405,27 @@ footer.foot p { margin: 0; }
     ["2.4.5","Múltiples vías","AA","Operable"],
     ["2.4.6","Encabezados y etiquetas","AA","Operable"],
     ["2.4.7","Foco visible","AA","Operable"],
+    ["2.4.11","Foco no oculto (mínimo)","AA","Operable","22"],
     ["2.5.1","Gestos del puntero","A","Operable"],
     ["2.5.2","Cancelación del puntero","A","Operable"],
     ["2.5.3","Etiqueta en el nombre","A","Operable"],
     ["2.5.4","Activación mediante movimiento","A","Operable"],
+    ["2.5.7","Movimientos de arrastre","AA","Operable","22"],
+    ["2.5.8","Tamaño del objetivo (mínimo)","AA","Operable","22"],
     ["3.1.1","Idioma de la página","A","Comprensible"],
     ["3.1.2","Idioma de las partes","AA","Comprensible"],
     ["3.2.1","Al recibir el foco","A","Comprensible"],
     ["3.2.2","Al recibir entradas","A","Comprensible"],
     ["3.2.3","Navegación coherente","AA","Comprensible"],
     ["3.2.4","Identificación coherente","AA","Comprensible"],
+    ["3.2.6","Ayuda coherente","A","Comprensible","22"],
     ["3.3.1","Identificación de errores","A","Comprensible"],
     ["3.3.2","Etiquetas o instrucciones","A","Comprensible"],
     ["3.3.3","Sugerencias ante errores","AA","Comprensible"],
     ["3.3.4","Prevención de errores (legales, financieros, datos)","AA","Comprensible"],
-    ["4.1.1","Procesamiento","A","Robusto"],
+    ["3.3.7","Entrada redundante","A","Comprensible","22"],
+    ["3.3.8","Autenticación accesible (mínimo)","AA","Comprensible","22"],
+    ["4.1.1","Procesamiento","A","Robusto","21"],
     ["4.1.2","Nombre, función, valor","A","Robusto"],
     ["4.1.3","Mensajes de estado","AA","Robusto"]
   ];
@@ -422,7 +436,7 @@ footer.foot p { margin: 0; }
   };
 
   var EXAMPLE = {
-    tipo: "publico", entidad: "Organismo Ejemplo (entidad ficticia)", objeto: "web1",
+    tipo: "publico", version: "22", entidad: "Organismo Ejemplo (entidad ficticia)", objeto: "web1",
     alcance: "https://www.example.org",
     servicio: "",
     carga: "", fuera: "Documentos PDF de actas publicados antes de 2018. Se facilitan en formato accesible a quien los solicite.",
@@ -448,7 +462,7 @@ footer.foot p { margin: 0; }
   }
   var $ = function (id) { return document.getElementById(id); };
   var form = $("f");
-  var FIELDS = ["entidad","objeto","alcance","servicio","carga","fuera","fecha","revision","metodo","tercero","unidad","email","formulario","telefono","reclamacion"];
+  var FIELDS = ["version","entidad","objeto","alcance","servicio","carga","fuera","fecha","revision","metodo","tercero","unidad","email","formulario","telefono","reclamacion"];
 
   // Lista de criterios
   var critsEl = $("crits");
@@ -464,6 +478,7 @@ footer.foot p { margin: 0; }
     var slug = c[0].replace(/\./g, "-");
     var row = document.createElement("div");
     row.className = "crit";
+    row.dataset.crit = c[0];
     row.innerHTML =
       '<span class="id">' + c[0] + '</span>' +
       '<label class="name" for="c-' + slug + '">' + c[1] + '<span class="lvl">' + c[2] + '</span></label>' +
@@ -504,6 +519,7 @@ footer.foot p { margin: 0; }
     FIELDS.forEach(function (k) { $(k).value = s[k] || ""; });
     if (!$("objeto").value) $("objeto").value = "web1";
     if (!$("metodo").value) $("metodo").value = "auto";
+    if (!$("version").value) $("version").value = "22";
     critsEl.querySelectorAll("select[data-crit]").forEach(function (el) {
       var id = el.dataset.crit;
       el.value = (s.crit && s.crit[id]) || (s.allCumple ? "cumple" : "pendiente");
@@ -512,9 +528,15 @@ footer.foot p { margin: 0; }
   }
 
   // Regla del modelo: plena solo sin ningún incumplimiento; parcial si los conformes superan a los no conformes.
+  // Criterios de la versión elegida: 2.2 añade seis y retira el 4.1.1.
+  function active(s) {
+    var v = s.version === "21" ? "21" : "22";
+    return CRITERIA.filter(function (c) { return !c[4] || c[4] === v; });
+  }
+
   function evaluate(s) {
     var t = { cumple: 0, nocumple: 0, noaplica: 0, pendiente: 0 };
-    CRITERIA.forEach(function (c) { t[s.crit[c[0]] || "pendiente"]++; });
+    active(s).forEach(function (c) { t[s.crit[c[0]] || "pendiente"]++; });
     var fails = t.nocumple + t.pendiente;
     t.situacion = fails === 0 ? "plena" : (t.cumple > fails ? "parcial" : "no");
     return t;
@@ -527,7 +549,8 @@ footer.foot p { margin: 0; }
     var norma = pub
       ? "el Real Decreto 1112/2018, de 7 de septiembre, sobre accesibilidad de los sitios web y aplicaciones para dispositivos móviles del sector público"
       : "la Ley 11/2023, de 8 de mayo, que traspone la Directiva (UE) 2019/882 sobre los requisitos de accesibilidad de los productos y servicios";
-    var ref = pub ? "el RD 1112/2018" : "los requisitos de accesibilidad de la Ley 11/2023, tomando como referencia la norma UNE-EN 301549 (WCAG 2.1 nivel AA)";
+    var wcag = s.version === "21" ? "las WCAG 2.1, niveles A y AA (norma UNE-EN 301549:2022)" : "las WCAG 2.2, niveles A y AA (norma EN 301 549 V4.1.1)";
+    var ref = pub ? "el RD 1112/2018" : "los requisitos de accesibilidad de la Ley 11/2023";
     var h = [];
     h.push("<h1>Declaración de accesibilidad</h1>");
     h.push("<p>" + ent + (pub ? " se ha comprometido" : " se compromete") + " a hacer " + o.acc + " " + o.poss + " de conformidad con " + norma + ".</p>");
@@ -547,8 +570,8 @@ footer.foot p { margin: 0; }
       h.push("<p>" + o.subj + " aún no " + o.verb + " " + o.conf + " con " + ref + ". A continuación se indican los aspectos no conformes.</p>");
     }
 
-    var failing = CRITERIA.filter(function (c) { return s.crit[c[0]] === "nocumple"; });
-    var pending = CRITERIA.filter(function (c) { return (s.crit[c[0]] || "pendiente") === "pendiente"; });
+    var failing = active(s).filter(function (c) { return s.crit[c[0]] === "nocumple"; });
+    var pending = active(s).filter(function (c) { return (s.crit[c[0]] || "pendiente") === "pendiente"; });
     var carga = s.carga && s.carga.trim(), fuera = s.fuera && s.fuera.trim();
     if (failing.length || pending.length || carga || fuera) {
       h.push("<h2>Contenido no accesible</h2>");
@@ -571,6 +594,7 @@ footer.foot p { margin: 0; }
 
     h.push("<h2>Preparación de la presente declaración de accesibilidad</h2>");
     h.push("<p>La presente declaración fue preparada el " + (s.fecha ? esc(fmtDate(s.fecha)) : ph("fecha")) + ".</p>");
+    h.push("<p>La evaluación se ha realizado tomando como referencia " + wcag + ".</p>");
     if (s.metodo === "tercero") {
       h.push("<p>El método empleado para preparar la declaración ha sido una evaluación llevada a cabo por un tercero: " + val(s.tercero, "nombre de la entidad evaluadora") + ".</p>");
     } else {
@@ -602,6 +626,9 @@ footer.foot p { margin: 0; }
     var t = evaluate(s);
     $("servicioField").hidden = s.tipo !== "privado";
     $("terceroField").hidden = s.metodo !== "tercero";
+    var on = {};
+    active(s).forEach(function (c) { on[c[0]] = true; });
+    critsEl.querySelectorAll(".crit").forEach(function (row) { row.hidden = !on[row.dataset.crit]; });
     critsEl.querySelectorAll("select[data-crit]").forEach(function (el) {
       el.dataset.v = el.value;
       el.parentElement.querySelector(".where").hidden = el.value !== "nocumple";
@@ -661,7 +688,7 @@ footer.foot p { margin: 0; }
   });
 
   $("clearBtn").addEventListener("click", function () {
-    write({ tipo: "publico", objeto: "web1", metodo: "auto", fecha: new Date().toISOString().slice(0, 10), reclamacion: RECLAMACION.publico, crit: {}, where: {} });
+    write({ tipo: "publico", version: "22", objeto: "web1", metodo: "auto", fecha: new Date().toISOString().slice(0, 10), reclamacion: RECLAMACION.publico, crit: {}, where: {} });
     $("exampleBar").hidden = true;
     render(true);
     $("entidad").focus();
