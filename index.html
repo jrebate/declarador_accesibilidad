@@ -526,7 +526,7 @@ button.btn:disabled:hover { background: var(--cz-primary); color: var(--cz-on-pr
 .doc h1 { font-family: var(--cz-font-display); font-stretch: 92%; font-size: 1.6rem; font-weight: 600; letter-spacing: -0.01em; margin: 0 0 .6em; }
 .doc h2 { font-family: var(--cz-font-display); font-stretch: 92%; font-size: 1.15rem; font-weight: 600; margin: 1.4em 0 .4em; }
 .doc h3 { font-family: var(--cz-font-sans); font-size: .98rem; font-weight: 600; margin: 1em 0 .3em; }
-.doc p, .doc ul { margin: 0 0 .7em; max-width: 68ch; }
+.doc p, .doc ul { margin: 0 0 .7em; }
 .doc .ph { background: var(--cz-note-paper); color: var(--cz-ink); border-radius: 2px; padding: 0 3px; }
 
 .pro {
@@ -544,7 +544,8 @@ button.btn:disabled:hover { background: var(--cz-primary); color: var(--cz-on-pr
 
 .legal { font-size: .86rem; color: var(--muted); border-top: 1px solid var(--cz-rule); padding-top: 12px; display: grid; gap: 6px; }
 .legal p { margin: 0; }
-footer.foot { margin-top: 40px; font-size: .86rem; color: var(--muted); display: grid; gap: 6px; max-width: 80ch; }
+/* Pie: columnas que ocupan todo el ancho, alineadas con la línea del pie, sin líneas eternas. */
+footer.foot { margin-top: 40px; font-size: .86rem; color: var(--muted); display: grid; grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr)); gap: 12px 32px; }
 footer.foot p { margin: 0; }
 .cz-footer { margin-top: 8px; }
 .cz-footer .cz-label { color: var(--muted); }
@@ -758,9 +759,8 @@ footer.foot p { margin: 0; }
   </div>
 
   <footer class="foot">
-    <p>Una herramienta de <a href="https://centaurux.es" target="_blank" rel="noopener">CentaurUX</a>.</p>
+    <p>Una herramienta de <a href="https://centaurux.es" target="_blank" rel="noopener">CentaurUX</a>. No presta asesoramiento jurídico.</p>
     <p>Estructura basada en el <a href="https://administracionelectronica.gob.es/pae_Home/va/dam/jcr:da4785f6-6c22-4d67-a466-3b62c4f10056/RECOMENDACIONES-MODELO-EUROPEO-ACCESIBILIDAD-acc.pdf" target="_blank" rel="noopener">modelo de declaración de accesibilidad del Portal de Administración Electrónica</a> (Decisión de Ejecución (UE) 2018/1523).</p>
-    <p>Esta herramienta no presta asesoramiento jurídico.</p>
     <p>¿Te resulta útil? Puedes apoyar el Declarador <a href="https://ko-fi.com/jrebate" target="_blank" rel="noopener" data-track="kofi-pie">invitándonos a un café en Ko-fi</a>.</p>
     <p><strong>Privacidad:</strong> lo que escribes en el formulario no sale de tu navegador. Contamos visitas y clics con <a href="https://www.goatcounter.com/" target="_blank" rel="noopener">GoatCounter</a>, que no usa cookies ni guarda datos personales.</p>
   </footer>
