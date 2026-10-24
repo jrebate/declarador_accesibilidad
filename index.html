@@ -58,7 +58,7 @@ body {
 }
 a { color: var(--accent); }
 :focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; border-radius: 4px; }
-.skip { position: absolute; left: -9999px; }
+.skip, .skip-sr { position: absolute; left: -9999px; }
 .skip:focus { left: 16px; top: 16px; background: var(--surface); padding: 8px 12px; z-index: 20; }
 
 header.top { display: grid; gap: 10px; margin-bottom: 26px; max-width: 70ch; }
@@ -118,8 +118,37 @@ input:focus, select:focus, textarea:focus { border-color: var(--accent); }
 .verdict.parcial { background: var(--warn-soft); }
 .verdict.no { background: var(--bad-soft); }
 .verdict strong { display: block; }
-.principle { display: grid; gap: 0; }
-.principle h3 { font-size: .8rem; text-transform: uppercase; letter-spacing: .09em; color: var(--muted); margin: 10px 0 6px; }
+.principle { border-top: 1px solid var(--line); }
+.principle > summary {
+  display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 6px 12px;
+  padding: 10px 0; cursor: pointer; list-style: none;
+}
+.principle > summary::-webkit-details-marker { display: none; }
+.principle > summary::before { content: "▸"; color: var(--accent); width: 1em; display: inline-block; transition: transform .15s; }
+.principle[open] > summary::before { transform: rotate(90deg); }
+.p-name { font-weight: 700; flex: 1; }
+.p-count { font-size: .86rem; color: var(--muted); font-variant-numeric: tabular-nums; }
+.p-count .pend { color: var(--warn); font-weight: 700; }
+.p-count .done { color: var(--ok); font-weight: 700; }
+.principle .crit:first-of-type { border-top: 0; }
+.quick { display: grid; gap: 8px; background: var(--paper); border: 1px solid var(--line); border-radius: 8px; padding: 12px 14px; }
+.quick .label { font-weight: 700; font-size: .95rem; }
+.quick label { display: flex; gap: 10px; align-items: flex-start; font-size: .95rem; cursor: pointer; }
+.quick input { margin-top: 4px; accent-color: var(--accent); }
+.steps {
+  position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5;
+  background: var(--paper); padding-block: 8px; margin-bottom: 4px;
+  display: flex; flex-wrap: wrap; gap: 6px;
+}
+.steps a {
+  display: inline-flex; align-items: center; gap: 6px; text-decoration: none; color: var(--ink);
+  border: 1px solid var(--line); background: var(--surface); border-radius: 999px; padding: 4px 11px; font-size: .86rem;
+}
+.steps a .st { font-variant-numeric: tabular-nums; color: var(--muted); }
+.steps a.ok { border-color: var(--ok); }
+.steps a.ok .st { color: var(--ok); font-weight: 700; }
+fieldset { scroll-margin-top: 64px; }
+@media (prefers-reduced-motion: reduce) { .principle > summary::before { transition: none; } }
 .crit { display: grid; grid-template-columns: 3.4rem minmax(0, 1fr) 9.5rem; gap: 4px 10px; align-items: center; padding: 7px 0; border-top: 1px solid var(--line); }
 .crit .id { font-variant-numeric: tabular-nums; color: var(--muted); font-size: .9rem; }
 .crit .name { font-size: .95rem; }
@@ -207,8 +236,9 @@ footer.foot p { margin: 0; }
         <button type="button" class="btn ghost" id="clearBtn">Empezar en blanco</button>
       </div>
 
+      <nav class="steps" id="steps" aria-label="Pasos del formulario"></nav>
       <form id="f" novalidate>
-        <fieldset>
+        <fieldset id="paso-1">
           <legend><span class="n">1</span> Tipo de entidad</legend>
           <div class="choice" role="radiogroup" aria-label="Tipo de entidad">
             <label><input type="radio" name="tipo" id="tipo-pub" value="publico" checked><span><strong>Sector público</strong></span><span class="sub">Ayuntamientos, universidades, organismos y sus contratistas. Real Decreto 1112/2018.</span></label>
@@ -216,7 +246,7 @@ footer.foot p { margin: 0; }
           </div>
         </fieldset>
 
-        <fieldset>
+        <fieldset id="paso-2">
           <legend><span class="n">2</span> Qué cubre la declaración</legend>
           <div class="field">
             <label for="entidad">Nombre de la entidad</label>
@@ -244,7 +274,7 @@ footer.foot p { margin: 0; }
           </div>
         </fieldset>
 
-        <fieldset>
+        <fieldset id="paso-3">
           <legend><span class="n">3</span> Autoevaluación WCAG</legend>
           <div class="field">
             <label for="version">Versión de referencia</label>
@@ -254,6 +284,12 @@ footer.foot p { margin: 0; }
             </select>
             <p class="hint" id="versionHint">La EN 301 549 V4.1.1, publicada en septiembre de 2026, adopta WCAG 2.2. Elige 2.1 solo si tu evaluación se hizo con la versión anterior.</p>
           </div>
+          <div class="quick">
+            <span class="label" id="quickLabel">Atajos: marca lo que tu web no tiene</span>
+            <label><input type="checkbox" id="sin-av" data-sin="av"> <span>No tiene audio ni vídeo <span class="hint">(6 criterios pasan a «No aplica»)</span></span></label>
+            <label><input type="checkbox" id="sin-forms" data-sin="forms"> <span>No tiene formularios <span class="hint">(campos, buscadores o envíos de datos)</span></span></label>
+            <label><input type="checkbox" id="sin-login" data-sin="login"> <span>No tiene inicio de sesión</span></label>
+          </div>
           <p class="hint">Marca cada criterio según lo que hayas comprobado. Lo que quede <em>sin evaluar</em> cuenta como no conforme: es la forma prudente de declarar.</p>
           <div class="tally" aria-live="polite" id="tally"></div>
           <div class="verdict" id="verdict" aria-live="polite"></div>
@@ -261,7 +297,7 @@ footer.foot p { margin: 0; }
           <p class="hint">Los nombres de los criterios siguen la traducción habitual al español de WCAG.</p>
         </fieldset>
 
-        <fieldset>
+        <fieldset id="paso-4">
           <legend><span class="n">4</span> Contenido no accesible</legend>
           <p class="hint">Los criterios que marques como «no cumple» se añaden solos. Aquí puedes completar el resto.</p>
           <div class="field">
@@ -274,7 +310,7 @@ footer.foot p { margin: 0; }
           </div>
         </fieldset>
 
-        <fieldset>
+        <fieldset id="paso-5">
           <legend><span class="n">5</span> Preparación</legend>
           <div class="row2">
             <div class="field">
@@ -299,7 +335,7 @@ footer.foot p { margin: 0; }
           </div>
         </fieldset>
 
-        <fieldset>
+        <fieldset id="paso-6">
           <legend><span class="n">6</span> Contacto y reclamaciones</legend>
           <div class="row2">
             <div class="field">
@@ -356,7 +392,7 @@ footer.foot p { margin: 0; }
           <span class="price">19 € <small>precio previsto, pago único por web</small></span>
         </div>
         <ul>
-          <li>Informe de autoevaluación con los 50 criterios, en PDF accesible, para adjuntar o enseñar a tu cliente.</li>
+          <li>Informe de autoevaluación con todos los criterios, en PDF accesible, para adjuntar o enseñar a tu cliente.</li>
           <li>La declaración en PDF accesible y HTML con tu logotipo y colores.</li>
           <li>Recordatorio por correo para la revisión anual.</li>
         </ul>
@@ -476,9 +512,10 @@ footer.foot p { margin: 0; }
   var groups = {};
   CRITERIA.forEach(function (c) {
     if (!groups[c[3]]) {
-      var g = document.createElement("div");
+      var g = document.createElement("details");
       g.className = "principle";
-      g.innerHTML = "<h3>" + c[3] + "</h3>";
+      g.dataset.principle = c[3];
+      g.innerHTML = '<summary><span class="p-name">' + c[3] + '</span><span class="p-count"></span></summary>';
       critsEl.appendChild(g);
       groups[c[3]] = g;
     }
@@ -518,6 +555,8 @@ footer.foot p { margin: 0; }
     FIELDS.forEach(function (k) { s[k] = $(k).value; });
     critsEl.querySelectorAll("select[data-crit]").forEach(function (el) { s.crit[el.dataset.crit] = el.value; });
     critsEl.querySelectorAll("input[data-where]").forEach(function (el) { if (el.value) s.where[el.dataset.where] = el.value; });
+    s.sin = {};
+    form.querySelectorAll("input[data-sin]").forEach(function (el) { s.sin[el.dataset.sin] = el.checked; });
     return s;
   }
 
@@ -527,6 +566,7 @@ footer.foot p { margin: 0; }
     if (!$("objeto").value) $("objeto").value = "web1";
     if (!$("metodo").value) $("metodo").value = "auto";
     if (!$("version").value) $("version").value = "22";
+    form.querySelectorAll("input[data-sin]").forEach(function (el) { el.checked = !!(s.sin && s.sin[el.dataset.sin]); });
     critsEl.querySelectorAll("select[data-crit]").forEach(function (el) {
       var id = el.dataset.crit;
       el.value = (s.crit && s.crit[id]) || (s.allCumple ? "cumple" : "pendiente");
@@ -535,6 +575,37 @@ footer.foot p { margin: 0; }
   }
 
   // Regla del modelo: plena solo sin ningún incumplimiento; parcial si los conformes superan a los no conformes.
+  // Atajos: criterios que no aplican si la web no tiene ese tipo de contenido.
+  var SIN = {
+    av: ["1.2.1","1.2.2","1.2.3","1.2.4","1.2.5","1.4.2"],
+    forms: ["1.3.5","3.3.1","3.3.2","3.3.3","3.3.4","3.3.7"],
+    login: ["3.3.8"]
+  };
+  function applySin(key, on) {
+    SIN[key].forEach(function (id) {
+      var el = $("c-" + id.replace(/\./g, "-"));
+      if (!el) return;
+      if (on && el.value === "pendiente") el.value = "noaplica";
+      if (!on && el.value === "noaplica") el.value = "pendiente";
+    });
+  }
+
+  var STEPS = [
+    ["paso-1", "Tipo"], ["paso-2", "Qué cubre"], ["paso-3", "Criterios"],
+    ["paso-4", "No accesible"], ["paso-5", "Preparación"], ["paso-6", "Contacto"]
+  ];
+  function filled(v) { return !!(v && v.trim()); }
+  function stepDone(s, t) {
+    return [
+      true,
+      filled(s.entidad) && filled(s.alcance) && (s.tipo !== "privado" || filled(s.servicio)),
+      t.pendiente === 0,
+      true,
+      filled(s.fecha) && (s.metodo !== "tercero" || filled(s.tercero)),
+      filled(s.unidad) && (filled(s.email) || filled(s.formulario)) && filled(s.reclamacion) && s.reclamacion.indexOf("[") === -1
+    ];
+  }
+
   // Criterios de la versión elegida: 2.2 añade seis y retira el 4.1.1.
   function active(s) {
     var v = s.version === "21" ? "21" : "22";
@@ -636,6 +707,22 @@ footer.foot p { margin: 0; }
     var on = {};
     active(s).forEach(function (c) { on[c[0]] = true; });
     critsEl.querySelectorAll(".crit").forEach(function (row) { row.hidden = !on[row.dataset.crit]; });
+    critsEl.querySelectorAll("details.principle").forEach(function (g) {
+      var total = 0, pend = 0;
+      active(s).forEach(function (c) {
+        if (c[3] !== g.dataset.principle) return;
+        total++;
+        if ((s.crit[c[0]] || "pendiente") === "pendiente") pend++;
+      });
+      g.querySelector(".p-count").innerHTML = total + " criterios · " +
+        (pend ? '<span class="pend">' + pend + " sin evaluar</span>" : '<span class="done">todo evaluado</span>');
+    });
+    var done = stepDone(s, t);
+    $("steps").innerHTML = STEPS.map(function (st, i) {
+      return '<a href="#' + st[0] + '" class="' + (done[i] ? "ok" : "") + '">' +
+        '<span class="st" aria-hidden="true">' + (done[i] ? "✓" : (i + 1)) + '</span>' + st[1] +
+        '<span class="skip-sr">' + (done[i] ? " (completo)" : " (pendiente)") + '</span></a>';
+    }).join("");
     critsEl.querySelectorAll("select[data-crit]").forEach(function (el) {
       el.dataset.v = el.value;
       el.parentElement.querySelector(".where").hidden = el.value !== "nocumple";
@@ -706,10 +793,12 @@ footer.foot p { margin: 0; }
     write({ tipo: "publico", version: "22", objeto: "web1", metodo: "auto", fecha: new Date().toISOString().slice(0, 10), reclamacion: RECLAMACION.publico, crit: {}, where: {} });
     $("exampleBar").hidden = true;
     render(true);
+    critsEl.querySelectorAll("details.principle").forEach(function (g) { g.open = true; });
     $("entidad").focus();
   });
 
   form.addEventListener("change", function (e) {
+    if (e.target.dataset && e.target.dataset.sin) applySin(e.target.dataset.sin, e.target.checked);
     if (e.target.name === "tipo") {
       var other = e.target.value === "publico" ? "privado" : "publico";
       var cur = $("reclamacion").value.trim();
@@ -732,6 +821,9 @@ footer.foot p { margin: 0; }
     write(ex);
   }
   render();
+  critsEl.querySelectorAll("details.principle").forEach(function (g) {
+    if (g.querySelector(".pend")) g.open = true;
+  });
 })();
 </script>
 <!-- GoatCounter (analítica sin cookies). -->
