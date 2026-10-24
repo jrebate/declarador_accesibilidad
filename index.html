@@ -148,6 +148,30 @@ input:focus, select:focus, textarea:focus { border-color: var(--accent); }
 .steps a.ok { border-color: var(--ok); }
 .steps a.ok .st { color: var(--ok); font-weight: 700; }
 fieldset { scroll-margin-top: 64px; }
+.formcol { min-width: 0; }
+.steps-title { display: none; }
+/* Pantallas anchas: el índice pasa a un lateral flotante a la izquierda. */
+@media (min-width: 1280px) {
+  .wrap { max-width: 1440px; }
+  .grid { grid-template-columns: 10.5rem minmax(0, 1fr) minmax(0, 1fr); }
+  .formcol { display: contents; }
+  .steps {
+    grid-column: 1; grid-row: 1 / span 2; align-self: start;
+    top: calc(env(safe-area-inset-top, 0px) + 16px);
+    flex-direction: column; flex-wrap: nowrap; gap: 0; padding-block: 4px; margin: 0; background: transparent;
+  }
+  .steps-title { display: block; font-size: .78rem; text-transform: uppercase; letter-spacing: .09em; color: var(--muted); padding: 0 0 8px 12px; }
+  .steps a {
+    border: 0; border-left: 2px solid var(--line); border-radius: 0; background: transparent;
+    padding: 7px 10px; font-size: .92rem; color: var(--muted);
+  }
+  .steps a:hover { color: var(--ink); border-left-color: var(--accent); }
+  .steps a.ok { border-left-color: var(--ok); color: var(--ink); }
+  .example-bar { grid-column: 2; grid-row: 1; margin-bottom: 0; }
+  form { grid-column: 2; grid-row: 2; }
+  aside.out { grid-column: 3; grid-row: 1 / span 2; }
+  fieldset { scroll-margin-top: 16px; }
+}
 @media (prefers-reduced-motion: reduce) { .principle > summary::before { transition: none; } }
 .crit { display: grid; grid-template-columns: 3.4rem minmax(0, 1fr) 9.5rem; gap: 4px 10px; align-items: center; padding: 7px 0; border-top: 1px solid var(--line); }
 .crit .id { font-variant-numeric: tabular-nums; color: var(--muted); font-size: .9rem; }
@@ -230,7 +254,7 @@ footer.foot p { margin: 0; }
   </header>
 
   <div class="grid">
-    <div style="min-width:0">
+    <div class="formcol">
       <div class="example-bar" id="exampleBar">
         <span>Estás viendo <strong>datos de ejemplo</strong> de una entidad ficticia. Sustitúyelos por los tuyos.</span>
         <button type="button" class="btn ghost" id="clearBtn">Empezar en blanco</button>
@@ -718,7 +742,8 @@ footer.foot p { margin: 0; }
         (pend ? '<span class="pend">' + pend + " sin evaluar</span>" : '<span class="done">todo evaluado</span>');
     });
     var done = stepDone(s, t);
-    $("steps").innerHTML = STEPS.map(function (st, i) {
+    var nDone = done.filter(Boolean).length;
+    $("steps").innerHTML = '<span class="steps-title">Pasos · ' + nDone + ' de 6</span>' + STEPS.map(function (st, i) {
       return '<a href="#' + st[0] + '" class="' + (done[i] ? "ok" : "") + '">' +
         '<span class="st" aria-hidden="true">' + (done[i] ? "✓" : (i + 1)) + '</span>' + st[1] +
         '<span class="skip-sr">' + (done[i] ? " (completo)" : " (pendiente)") + '</span></a>';
