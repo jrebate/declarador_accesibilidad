@@ -170,6 +170,8 @@ button.btn.ghost { background: transparent; color: var(--accent); }
 .price { font-size: 1.4rem; font-weight: 700; font-variant-numeric: tabular-nums; }
 .price small { font-size: .8rem; font-weight: 400; color: var(--muted); }
 .pro ul { margin: 0; padding-left: 1.2em; display: grid; gap: 3px; font-size: .94rem; }
+.kofi { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px; border: 1px solid var(--line); background: var(--surface); border-radius: var(--radius); padding: 12px 14px; font-size: .95rem; }
+.kofi a { font-weight: 700; }
 .pro-thanks { background: var(--accent-soft); border-radius: 8px; padding: 10px 12px; font-size: .94rem; }
 
 .legal { font-size: .86rem; color: var(--muted); border-top: 1px solid var(--line); padding-top: 12px; display: grid; gap: 6px; }
@@ -342,6 +344,10 @@ footer.foot p { margin: 0; }
         </div>
       </div>
       <div class="status" id="copyStatus" role="status"></div>
+      <div class="kofi" id="kofiNudge" hidden>
+        <span>¿Te ha ahorrado tiempo? El Declarador es gratis y lo mantenemos con tu apoyo.</span>
+        <a href="https://ko-fi.com/jrebate" target="_blank" rel="noopener" data-track="kofi-tras-copiar">Invítanos a un café en Ko-fi</a>
+      </div>
       <article class="doc" id="documento" tabindex="0" aria-label="Vista previa de la declaración"></article>
 
       <section class="pro" aria-labelledby="proTitle">
@@ -363,6 +369,7 @@ footer.foot p { margin: 0; }
   <footer class="foot">
     <p>Estructura basada en el <a href="https://administracionelectronica.gob.es/pae_Home/va/dam/jcr:da4785f6-6c22-4d67-a466-3b62c4f10056/RECOMENDACIONES-MODELO-EUROPEO-ACCESIBILIDAD-acc.pdf" target="_blank" rel="noopener">modelo de declaración de accesibilidad del Portal de Administración Electrónica</a> (Decisión de Ejecución (UE) 2018/1523).</p>
     <p>Esta herramienta no presta asesoramiento jurídico.</p>
+    <p>¿Te resulta útil? Puedes apoyar el Declarador <a href="https://ko-fi.com/jrebate" target="_blank" rel="noopener" data-track="kofi-pie">invitándonos a un café en Ko-fi</a>.</p>
     <p><strong>Privacidad:</strong> lo que escribes en el formulario no sale de tu navegador. Contamos visitas y clics con <a href="https://www.goatcounter.com/" target="_blank" rel="noopener">GoatCounter</a>, que no usa cookies ni guarda datos personales.</p>
   </footer>
 </div>
@@ -653,7 +660,11 @@ footer.foot p { margin: 0; }
 
   function copy(text, msg) {
     var status = $("copyStatus");
-    var done = function () { status.textContent = msg; setTimeout(function () { status.textContent = ""; }, 4000); };
+    var done = function () {
+      status.textContent = msg;
+      setTimeout(function () { status.textContent = ""; }, 4000);
+      $("kofiNudge").hidden = false;
+    };
     var fallback = function () {
       var ta = document.createElement("textarea");
       ta.value = text; ta.setAttribute("readonly", ""); ta.style.position = "fixed"; ta.style.opacity = "0";
@@ -679,6 +690,10 @@ footer.foot p { margin: 0; }
     });
     copy(parts.join("\n\n") + "\n", "Texto copiado.");
     track("copiar-texto", "Copiar texto");
+  });
+
+  document.querySelectorAll("a[data-track]").forEach(function (a) {
+    a.addEventListener("click", function () { track(a.dataset.track, "Ko-fi"); });
   });
 
   $("proBtn").addEventListener("click", function () {
