@@ -138,15 +138,30 @@ input:focus, select:focus, textarea:focus { border-color: var(--accent); }
 .steps {
   position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5;
   background: var(--paper); padding-block: 8px; margin-bottom: 4px;
-  display: flex; flex-wrap: wrap; gap: 6px;
 }
-.steps a {
-  display: inline-flex; align-items: center; gap: 6px; text-decoration: none; color: var(--ink);
-  border: 1px solid var(--line); background: var(--surface); border-radius: 999px; padding: 4px 11px; font-size: .86rem;
+.steps-toggle {
+  width: 100%; display: flex; align-items: center; gap: 12px; cursor: pointer;
+  font: inherit; color: var(--ink); text-align: left;
+  background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 9px 12px;
 }
-.steps a .st { font-variant-numeric: tabular-nums; color: var(--muted); }
-.steps a.ok { border-color: var(--ok); }
-.steps a.ok .st { color: var(--ok); font-weight: 700; }
+.steps-toggle .lbl { font-weight: 700; font-size: .92rem; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.segs { flex: 1; display: grid; grid-template-columns: repeat(6, 1fr); gap: 4px; min-width: 0; }
+.segs i { height: 5px; border-radius: 3px; background: var(--line); }
+.segs i.ok { background: var(--ok); }
+.chev { color: var(--accent); transition: transform .15s; }
+.steps.open .chev { transform: rotate(180deg); }
+.steps-list { list-style: none; margin: 6px 0 0; padding: 6px 0; background: var(--surface); border: 1px solid var(--line); border-radius: 8px; }
+.steps:not(.open) .steps-list { display: none; }
+.steps-list a {
+  display: flex; align-items: center; gap: 8px; text-decoration: none; color: var(--muted);
+  border-left: 2px solid var(--line); margin-left: 12px; padding: 7px 10px; font-size: .95rem;
+}
+.steps-list a:hover { color: var(--ink); border-left-color: var(--accent); }
+.steps-list a.ok { border-left-color: var(--ok); color: var(--ink); }
+.steps-list .st { font-variant-numeric: tabular-nums; width: 1em; }
+.steps-list a.ok .st { color: var(--ok); font-weight: 700; }
+.steps-title { display: none; }
+@media (prefers-reduced-motion: reduce) { .chev { transition: none; } }
 fieldset { scroll-margin-top: 64px; }
 .formcol { min-width: 0; }
 .steps-title { display: none; }
@@ -158,15 +173,12 @@ fieldset { scroll-margin-top: 64px; }
   .steps {
     grid-column: 1; grid-row: 1 / span 2; align-self: start;
     top: calc(env(safe-area-inset-top, 0px) + 16px);
-    flex-direction: column; flex-wrap: nowrap; gap: 0; padding-block: 4px; margin: 0; background: transparent;
+    padding-block: 4px; margin: 0; background: transparent;
   }
+  .steps-toggle { display: none; }
   .steps-title { display: block; font-size: .78rem; text-transform: uppercase; letter-spacing: .09em; color: var(--muted); padding: 0 0 8px 12px; }
-  .steps a {
-    border: 0; border-left: 2px solid var(--line); border-radius: 0; background: transparent;
-    padding: 7px 10px; font-size: .92rem; color: var(--muted);
-  }
-  .steps a:hover { color: var(--ink); border-left-color: var(--accent); }
-  .steps a.ok { border-left-color: var(--ok); color: var(--ink); }
+  .steps .steps-list, .steps:not(.open) .steps-list { display: block; margin: 0; padding: 0; background: transparent; border: 0; }
+  .steps-list a { margin-left: 0; font-size: .92rem; }
   .example-bar { grid-column: 2; grid-row: 1; margin-bottom: 0; }
   form { grid-column: 2; grid-row: 2; }
   aside.out { grid-column: 3; grid-row: 1 / span 2; }
@@ -260,7 +272,15 @@ footer.foot p { margin: 0; }
         <button type="button" class="btn ghost" id="clearBtn">Empezar en blanco</button>
       </div>
 
-      <nav class="steps" id="steps" aria-label="Pasos del formulario"></nav>
+      <nav class="steps" id="steps" aria-label="Pasos del formulario">
+        <span class="steps-title" id="stepsTitle">Pasos</span>
+        <button type="button" class="steps-toggle" id="stepsToggle" aria-expanded="false" aria-controls="stepsList">
+          <span class="lbl" id="stepsLbl">Pasos</span>
+          <span class="segs" id="stepsSegs" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i></span>
+          <span class="chev" aria-hidden="true">▾</span>
+        </button>
+        <ol class="steps-list" id="stepsList"></ol>
+      </nav>
       <form id="f" novalidate>
         <fieldset id="paso-1">
           <legend><span class="n">1</span> Tipo de entidad</legend>
@@ -743,11 +763,15 @@ footer.foot p { margin: 0; }
     });
     var done = stepDone(s, t);
     var nDone = done.filter(Boolean).length;
-    $("steps").innerHTML = '<span class="steps-title">Pasos · ' + nDone + ' de 6</span>' + STEPS.map(function (st, i) {
-      return '<a href="#' + st[0] + '" class="' + (done[i] ? "ok" : "") + '">' +
-        '<span class="st" aria-hidden="true">' + (done[i] ? "✓" : (i + 1)) + '</span>' + st[1] +
-        '<span class="skip-sr">' + (done[i] ? " (completo)" : " (pendiente)") + '</span></a>';
-    }).join("");
+    var label = "Pasos · " + nDone + " de 6";
+    $("stepsTitle").textContent = label;
+    $("stepsLbl").textContent = label;
+    $("stepsSegs").querySelectorAll("i").forEach(function (seg, i) { seg.className = done[i] ? "ok" : ""; });
+    $("stepsList").querySelectorAll("a").forEach(function (a, i) {
+      a.className = done[i] ? "ok" : "";
+      a.querySelector(".st").textContent = done[i] ? "✓" : String(i + 1);
+      a.querySelector(".skip-sr").textContent = done[i] ? " (completo)" : " (pendiente)";
+    });
     critsEl.querySelectorAll("select[data-crit]").forEach(function (el) {
       el.dataset.v = el.value;
       el.parentElement.querySelector(".where").hidden = el.value !== "nocumple";
@@ -845,6 +869,20 @@ footer.foot p { margin: 0; }
     ex.allCumple = true;
     write(ex);
   }
+  // Índice de pasos: se construye una vez; en móvil y tablet se pliega.
+  $("stepsList").innerHTML = STEPS.map(function (st) {
+    return '<li><a href="#' + st[0] + '"><span class="st" aria-hidden="true"></span>' + st[1] + '<span class="skip-sr"></span></a></li>';
+  }).join("");
+  function setStepsOpen(open) {
+    $("steps").classList.toggle("open", open);
+    $("stepsToggle").setAttribute("aria-expanded", open ? "true" : "false");
+  }
+  $("stepsToggle").addEventListener("click", function () { setStepsOpen(!$("steps").classList.contains("open")); });
+  $("stepsList").addEventListener("click", function (e) { if (e.target.closest("a")) setStepsOpen(false); });
+  $("steps").addEventListener("keydown", function (e) {
+    if (e.key === "Escape" && $("steps").classList.contains("open")) { setStepsOpen(false); $("stepsToggle").focus(); }
+  });
+
   render();
   critsEl.querySelectorAll("details.principle").forEach(function (g) {
     if (g.querySelector(".pend")) g.open = true;
