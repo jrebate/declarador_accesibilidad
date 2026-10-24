@@ -540,6 +540,10 @@ button.btn:disabled:hover { background: var(--cz-primary); color: var(--cz-on-pr
 .pro ul { margin: 0; padding-left: 1.2em; display: grid; gap: 3px; font-size: .94rem; }
 .kofi { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px; border: 1px solid var(--cz-rule); background: var(--surface); border-radius: var(--radius); padding: 12px 14px; font-size: .95rem; }
 .kofi a { font-weight: 600; }
+.pro-ask { margin: 0; font-weight: 600; }
+.pro-actions { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+.pro-contact { margin: 0; font-size: .94rem; }
+.pro-contact a { overflow-wrap: anywhere; }
 .pro-thanks { background: var(--cz-muted); border-radius: var(--radius); padding: 10px 12px; font-size: .94rem; }
 
 .legal { font-size: .86rem; color: var(--muted); border-top: 1px solid var(--cz-rule); padding-top: 12px; display: grid; gap: 6px; }
@@ -745,15 +749,19 @@ footer.foot p { margin: 0; }
       <section class="pro" aria-labelledby="proTitle">
         <div class="pro-head">
           <strong id="proTitle">Pack Pro · próximamente</strong>
-          <span class="price">19 € <small>precio previsto, pago único por web</small></span>
         </div>
+        <p class="pro-ask">¿Pagarías una cantidad simbólica por estas mejoras?</p>
         <ul>
           <li>Informe de autoevaluación con todos los criterios, en PDF accesible, para adjuntar o enseñar a tu cliente.</li>
           <li>La declaración en PDF accesible y HTML con tu logotipo y colores.</li>
           <li>Recordatorio por correo para la revisión anual.</li>
         </ul>
-        <div><button type="button" class="btn" id="proBtn">Me interesa</button></div>
-        <div class="pro-thanks" id="proThanks" hidden role="status">Gracias, lo tendremos en cuenta. Tu interés nos ayuda a seguir mejorando el Declarador. Mientras tanto, la declaración es gratis.</div>
+        <div class="pro-actions">
+          <button type="button" class="btn" id="proBtn">Me interesa</button>
+          <a class="cz-btn cz-btn--outline" href="https://ko-fi.com/jrebate" target="_blank" rel="noopener" data-track="kofi-pro">Apóyalo ya en Ko-fi</a>
+        </div>
+        <div class="pro-thanks" id="proThanks" hidden role="status">Gracias, lo tendremos en cuenta. Tu interés nos ayuda a decidir qué construir. Mientras tanto, la declaración es gratis.</div>
+        <p class="pro-contact">¿Te interesa mucho o echas algo en falta? Escríbeme, soy Jorge: <a href="mailto:jrebateserrano@gmail.com" data-track="contacto-email">jrebateserrano@gmail.com</a></p>
       </section>
     </aside>
   </div>
