@@ -1,0 +1,699 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Declarador de accesibilidad</title>
+<meta name="description" content="Genera la declaración de accesibilidad de tu web en español, según el modelo oficial del RD 1112/2018 o la Ley 11/2023.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Literata:opsz,wght@7..72,400;7..72,600&display=swap">
+<style>
+/* Layout: formulario por pasos a la izquierda, documento vivo a la derecha (pegajoso); una columna en móvil. */
+:root {
+  --paper: #f3f6f5;
+  --surface: #ffffff;
+  --ink: #142120;
+  --muted: #53625f;
+  --line: #d3ddda;
+  --accent: #0c5a61;
+  --accent-ink: #ffffff;
+  --accent-soft: #e2efef;
+  --doc: #fffefa;
+  --ok: #1d6f37;
+  --ok-soft: #e3f2e7;
+  --warn: #8a5100;
+  --warn-soft: #fbf0dc;
+  --bad: #a8231b;
+  --bad-soft: #fbe6e4;
+  --font-ui: "Atkinson Hyperlegible", "Segoe UI", system-ui, sans-serif;
+  --font-doc: "Literata", Georgia, "Times New Roman", serif;
+  --radius: 10px;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --paper: #0e1514; --surface: #162120; --ink: #e5eeec; --muted: #9db0ac; --line: #2b3b39;
+    --accent: #6cc6cc; --accent-ink: #062325; --accent-soft: #173335; --doc: #192322;
+    --ok: #74d18f; --ok-soft: #173322; --warn: #f1b75e; --warn-soft: #362812; --bad: #ff8f85; --bad-soft: #3a1b19;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --paper: #0e1514; --surface: #162120; --ink: #e5eeec; --muted: #9db0ac; --line: #2b3b39;
+  --accent: #6cc6cc; --accent-ink: #062325; --accent-soft: #173335; --doc: #192322;
+  --ok: #74d18f; --ok-soft: #173322; --warn: #f1b75e; --warn-soft: #362812; --bad: #ff8f85; --bad-soft: #3a1b19;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+body {
+  background: var(--paper); color: var(--ink);
+  font-family: var(--font-ui); font-size: 1rem; line-height: 1.55; margin: 0;
+}
+.wrap {
+  max-width: 1240px; margin: 0 auto;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 28px 56px;
+}
+a { color: var(--accent); }
+:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; border-radius: 4px; }
+.skip { position: absolute; left: -9999px; }
+.skip:focus { left: 16px; top: 16px; background: var(--surface); padding: 8px 12px; z-index: 20; }
+
+header.top { display: grid; gap: 10px; margin-bottom: 26px; max-width: 70ch; }
+.brand { display: flex; align-items: center; gap: 10px; font-weight: 700; letter-spacing: .02em; color: var(--accent); }
+.brand svg { flex: none; }
+h1 { font-size: clamp(1.7rem, 3.6vw, 2.5rem); line-height: 1.15; margin: 0; text-wrap: balance; }
+.lede { color: var(--muted); margin: 0; font-size: 1.08rem; }
+.badges { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 4px; }
+.badge { font-size: .82rem; border: 1px solid var(--line); background: var(--surface); padding: 3px 10px; border-radius: 999px; color: var(--muted); }
+
+.grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr); gap: 28px; align-items: start; }
+@media (max-width: 920px) { .grid { grid-template-columns: minmax(0, 1fr); } }
+
+.example-bar {
+  display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px;
+  background: var(--warn-soft); color: var(--ink); border: 1px solid var(--line);
+  border-radius: var(--radius); padding: 10px 14px; margin-bottom: 16px; font-size: .95rem;
+}
+.example-bar[hidden] { display: none !important; }
+
+form { display: grid; gap: 16px; min-width: 0; }
+fieldset {
+  border: 1px solid var(--line); background: var(--surface); border-radius: var(--radius);
+  margin: 0; padding: 18px 18px 20px; display: grid; gap: 14px; min-width: 0;
+}
+legend { font-weight: 700; font-size: 1.1rem; padding: 0 6px; display: flex; align-items: baseline; gap: 10px; }
+legend .n { font-variant-numeric: tabular-nums; color: var(--accent); font-size: .9rem; letter-spacing: .06em; }
+.field { display: grid; gap: 6px; min-width: 0; }
+.field label, .field .label { font-weight: 700; font-size: .95rem; }
+.hint { color: var(--muted); font-size: .88rem; margin: 0; }
+input[type="text"], input[type="url"], input[type="email"], input[type="date"], input[type="tel"], select, textarea {
+  font: inherit; color: var(--ink); background: var(--paper);
+  border: 1px solid var(--line); border-radius: 8px; padding: 9px 11px; width: 100%; min-width: 0;
+}
+textarea { min-height: 84px; resize: vertical; }
+input:focus, select:focus, textarea:focus { border-color: var(--accent); }
+.row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+@media (max-width: 520px) { .row2 { grid-template-columns: 1fr; } }
+
+.choice { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+@media (max-width: 520px) { .choice { grid-template-columns: 1fr; } }
+.choice label {
+  display: grid; grid-template-columns: auto 1fr; gap: 4px 10px; align-items: start;
+  border: 1px solid var(--line); border-radius: 8px; padding: 12px; cursor: pointer; background: var(--paper);
+}
+.choice label:has(input:checked) { border-color: var(--accent); background: var(--accent-soft); }
+.choice input { margin-top: 4px; accent-color: var(--accent); }
+.choice strong { display: block; }
+.choice span.sub { grid-column: 2; color: var(--muted); font-size: .86rem; }
+
+/* Autoevaluación */
+.tally { display: flex; flex-wrap: wrap; gap: 8px; font-size: .9rem; font-variant-numeric: tabular-nums; }
+.tally span { padding: 3px 10px; border-radius: 999px; border: 1px solid var(--line); background: var(--paper); }
+.tally .t-ok { color: var(--ok); } .tally .t-bad { color: var(--bad); } .tally .t-pend { color: var(--warn); }
+.verdict { border-radius: 8px; padding: 10px 12px; font-size: .95rem; border: 1px solid var(--line); }
+.verdict.plena { background: var(--ok-soft); }
+.verdict.parcial { background: var(--warn-soft); }
+.verdict.no { background: var(--bad-soft); }
+.verdict strong { display: block; }
+.principle { display: grid; gap: 0; }
+.principle h3 { font-size: .8rem; text-transform: uppercase; letter-spacing: .09em; color: var(--muted); margin: 10px 0 6px; }
+.crit { display: grid; grid-template-columns: 3.4rem minmax(0, 1fr) 9.5rem; gap: 4px 10px; align-items: center; padding: 7px 0; border-top: 1px solid var(--line); }
+.crit .id { font-variant-numeric: tabular-nums; color: var(--muted); font-size: .9rem; }
+.crit .name { font-size: .95rem; }
+.crit .lvl { font-size: .72rem; font-weight: 700; color: var(--muted); border: 1px solid var(--line); border-radius: 4px; padding: 0 5px; margin-left: 6px; vertical-align: 1px; }
+.crit select { padding: 6px 8px; font-size: .9rem; }
+.crit select[data-v="cumple"] { color: var(--ok); }
+.crit select[data-v="nocumple"] { color: var(--bad); }
+.crit select[data-v="pendiente"] { color: var(--warn); }
+.crit .where { grid-column: 2 / 4; }
+.crit .where input { font-size: .9rem; padding: 6px 9px; }
+@media (max-width: 520px) {
+  .crit { grid-template-columns: 3rem minmax(0, 1fr); }
+  .crit select { grid-column: 2; }
+  .crit .where { grid-column: 2; }
+}
+.linkbtn { font: inherit; background: none; border: 0; color: var(--accent); text-decoration: underline; cursor: pointer; padding: 0; }
+
+/* Documento */
+aside.out { position: sticky; top: calc(env(safe-area-inset-top, 0px) + 16px); display: grid; gap: 14px; min-width: 0; }
+@media (max-width: 920px) { aside.out { position: static; } }
+.toolbar { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; justify-content: space-between; }
+.toolbar h2 { font-size: 1rem; margin: 0; }
+.btns { display: flex; flex-wrap: wrap; gap: 8px; }
+button.btn {
+  font: inherit; font-weight: 700; font-size: .92rem; cursor: pointer;
+  border-radius: 8px; padding: 8px 14px; border: 1px solid var(--accent); background: var(--accent); color: var(--accent-ink);
+}
+button.btn.ghost { background: transparent; color: var(--accent); }
+.status { font-size: .88rem; color: var(--ok); min-height: 1.3em; }
+.doc {
+  background: var(--doc); border: 1px solid var(--line); border-radius: 4px;
+  padding: clamp(18px, 3vw, 34px); max-height: 72vh; overflow: auto;
+  font-family: var(--font-doc); font-size: .98rem; line-height: 1.6; box-shadow: 0 1px 0 var(--line), 0 12px 28px -18px rgba(10, 40, 40, .35);
+}
+@media (max-width: 920px) { .doc { max-height: none; } }
+.doc h1 { font-family: var(--font-doc); font-size: 1.45rem; font-weight: 600; margin: 0 0 .6em; }
+.doc h2 { font-family: var(--font-doc); font-size: 1.08rem; font-weight: 600; margin: 1.4em 0 .4em; }
+.doc h3 { font-family: var(--font-doc); font-size: .98rem; font-weight: 600; margin: 1em 0 .3em; }
+.doc p, .doc ul { margin: 0 0 .7em; max-width: 68ch; }
+.doc .ph { background: var(--warn-soft); border-radius: 3px; padding: 0 3px; }
+
+.pro {
+  border: 1.5px solid var(--accent); border-radius: var(--radius); background: var(--surface);
+  padding: 16px 18px; display: grid; gap: 10px;
+}
+.pro-head { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 8px; }
+.pro-head strong { font-size: 1.05rem; }
+.price { font-size: 1.4rem; font-weight: 700; font-variant-numeric: tabular-nums; }
+.price small { font-size: .8rem; font-weight: 400; color: var(--muted); }
+.pro ul { margin: 0; padding-left: 1.2em; display: grid; gap: 3px; font-size: .94rem; }
+.pro-thanks { background: var(--accent-soft); border-radius: 8px; padding: 10px 12px; font-size: .94rem; }
+
+.legal { font-size: .86rem; color: var(--muted); border-top: 1px solid var(--line); padding-top: 12px; display: grid; gap: 6px; }
+.legal p { margin: 0; }
+footer.foot { margin-top: 36px; font-size: .86rem; color: var(--muted); display: grid; gap: 4px; max-width: 80ch; }
+footer.foot p { margin: 0; }
+@media (prefers-reduced-motion: reduce) { * { scroll-behavior: auto !important; transition: none !important; } }
+</style>
+
+</head>
+<body>
+<a class="skip" href="#documento">Saltar al documento generado</a>
+<div class="wrap">
+  <header class="top">
+    <div class="brand">
+      <svg width="26" height="26" viewBox="0 0 26 26" aria-hidden="true"><rect x="3" y="2" width="17" height="22" rx="2.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M7.5 9h8M7.5 13h8M7.5 17h4.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="20" cy="19" r="4.5" fill="currentColor"/><path d="M18 19l1.5 1.5 2.6-2.8" stroke="var(--surface)" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      Declarador
+    </div>
+    <h1>La declaración de accesibilidad de tu web, lista en 10 minutos</h1>
+    <p class="lede">Rellena el formulario y obtén la declaración con la estructura del modelo oficial, lista para copiar en tu web. Tú decides lo que declaras; nosotros le damos la forma correcta.</p>
+    <div class="badges" aria-label="Características">
+      <span class="badge">Modelo RD 1112/2018</span>
+      <span class="badge">Ley 11/2023 (EAA)</span>
+      <span class="badge">WCAG 2.1 AA · 50 criterios</span>
+      <span class="badge">Tus datos no salen del navegador</span>
+    </div>
+  </header>
+
+  <div class="grid">
+    <div style="min-width:0">
+      <div class="example-bar" id="exampleBar">
+        <span>Estás viendo <strong>datos de ejemplo</strong> de una entidad ficticia. Sustitúyelos por los tuyos.</span>
+        <button type="button" class="btn ghost" id="clearBtn">Empezar en blanco</button>
+      </div>
+
+      <form id="f" novalidate>
+        <fieldset>
+          <legend><span class="n">1</span> Tipo de entidad</legend>
+          <div class="choice" role="radiogroup" aria-label="Tipo de entidad">
+            <label><input type="radio" name="tipo" id="tipo-pub" value="publico" checked><span><strong>Sector público</strong></span><span class="sub">Ayuntamientos, universidades, organismos y sus contratistas. Real Decreto 1112/2018.</span></label>
+            <label><input type="radio" name="tipo" id="tipo-priv" value="privado"><span><strong>Empresa privada</strong></span><span class="sub">Comercio electrónico, banca, transporte y otros servicios. Ley 11/2023.</span></label>
+          </div>
+        </fieldset>
+
+        <fieldset>
+          <legend><span class="n">2</span> Qué cubre la declaración</legend>
+          <div class="field">
+            <label for="entidad">Nombre de la entidad</label>
+            <input type="text" id="entidad" name="entidad" autocomplete="organization">
+          </div>
+          <div class="row2">
+            <div class="field">
+              <label for="objeto">Qué se declara</label>
+              <select id="objeto" name="objeto">
+                <option value="web1">Un sitio web</option>
+                <option value="webN">Varios sitios web</option>
+                <option value="app1">Una aplicación móvil</option>
+                <option value="webapp">Sitio web y aplicación móvil</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="alcance">Direcciones o nombres</label>
+              <input type="text" id="alcance" name="alcance" placeholder="https://www.ejemplo.es">
+            </div>
+          </div>
+          <div class="field" id="servicioField" hidden>
+            <label for="servicio">Descripción del servicio</label>
+            <p class="hint" id="servicioHint">La Ley 11/2023 pide explicar en qué consiste el servicio y cómo se usa.</p>
+            <textarea id="servicio" name="servicio" aria-describedby="servicioHint"></textarea>
+          </div>
+        </fieldset>
+
+        <fieldset>
+          <legend><span class="n">3</span> Autoevaluación WCAG 2.1 AA</legend>
+          <p class="hint">Marca cada criterio según lo que hayas comprobado. Lo que quede <em>sin evaluar</em> cuenta como no conforme: es la forma prudente de declarar.</p>
+          <div class="tally" aria-live="polite" id="tally"></div>
+          <div class="verdict" id="verdict" aria-live="polite"></div>
+          <div id="crits"></div>
+          <p class="hint">Los nombres de los criterios siguen la traducción habitual de WCAG 2.1, que recoge la norma UNE-EN 301549.</p>
+        </fieldset>
+
+        <fieldset>
+          <legend><span class="n">4</span> Contenido no accesible</legend>
+          <p class="hint">Los criterios que marques como «no cumple» se añaden solos. Aquí puedes completar el resto.</p>
+          <div class="field">
+            <label for="carga">Carga desproporcionada (opcional)</label>
+            <textarea id="carga" name="carga" placeholder="Contenido para el que se invoca temporalmente la excepción por carga desproporcionada"></textarea>
+          </div>
+          <div class="field">
+            <label for="fuera">Contenido fuera del ámbito de la ley (opcional)</label>
+            <textarea id="fuera" name="fuera" placeholder="Por ejemplo, documentos de ofimática publicados antes del 20 de septiembre de 2018, y sus alternativas accesibles si las hay"></textarea>
+          </div>
+        </fieldset>
+
+        <fieldset>
+          <legend><span class="n">5</span> Preparación</legend>
+          <div class="row2">
+            <div class="field">
+              <label for="fecha">Fecha de preparación</label>
+              <input type="date" id="fecha" name="fecha">
+            </div>
+            <div class="field">
+              <label for="revision">Última revisión (opcional)</label>
+              <input type="date" id="revision" name="revision">
+            </div>
+          </div>
+          <div class="field">
+            <label for="metodo">Método empleado</label>
+            <select id="metodo" name="metodo">
+              <option value="auto">Autoevaluación realizada por la propia entidad</option>
+              <option value="tercero">Evaluación realizada por una entidad externa</option>
+            </select>
+          </div>
+          <div class="field" id="terceroField" hidden>
+            <label for="tercero">Nombre de la entidad evaluadora</label>
+            <input type="text" id="tercero" name="tercero">
+          </div>
+        </fieldset>
+
+        <fieldset>
+          <legend><span class="n">6</span> Contacto y reclamaciones</legend>
+          <div class="row2">
+            <div class="field">
+              <label for="unidad">Unidad responsable</label>
+              <input type="text" id="unidad" name="unidad" placeholder="Unidad de accesibilidad">
+            </div>
+            <div class="field">
+              <label for="email">Correo de contacto</label>
+              <input type="email" id="email" name="email" autocomplete="email">
+            </div>
+          </div>
+          <div class="row2">
+            <div class="field">
+              <label for="formulario">Enlace al formulario de quejas (opcional)</label>
+              <input type="url" id="formulario" name="formulario" placeholder="https://">
+            </div>
+            <div class="field">
+              <label for="telefono">Teléfono (opcional)</label>
+              <input type="tel" id="telefono" name="telefono" autocomplete="tel">
+            </div>
+          </div>
+          <div class="field">
+            <label for="reclamacion">Procedimiento de reclamación</label>
+            <p class="hint" id="reclamacionHint">Qué puede hacer la persona si la respuesta no le satisface, y ante qué organismo. Revisa el texto propuesto.</p>
+            <textarea id="reclamacion" name="reclamacion" aria-describedby="reclamacionHint"></textarea>
+          </div>
+        </fieldset>
+
+        <div class="legal">
+          <p><strong>Importante.</strong> El Declarador da formato a lo que tú declaras. No analiza tu web ni sustituye una auditoría de accesibilidad, y no certifica que cumplas la ley. La entidad que publica la declaración es responsable de su contenido.</p>
+          <p>Todo se procesa en tu navegador. Guardamos un borrador solo en este dispositivo para que no pierdas lo escrito.</p>
+        </div>
+      </form>
+    </div>
+
+    <aside class="out" aria-labelledby="docTitle">
+      <div class="toolbar">
+        <h2 id="docTitle">Tu declaración</h2>
+        <div class="btns">
+          <button type="button" class="btn" id="copyHtml">Copiar HTML</button>
+          <button type="button" class="btn ghost" id="copyText">Copiar texto</button>
+        </div>
+      </div>
+      <div class="status" id="copyStatus" role="status"></div>
+      <article class="doc" id="documento" tabindex="0" aria-label="Vista previa de la declaración"></article>
+
+      <section class="pro" aria-labelledby="proTitle">
+        <div class="pro-head">
+          <strong id="proTitle">Pack Pro · próximamente</strong>
+          <span class="price">19 € <small>precio previsto, pago único por web</small></span>
+        </div>
+        <ul>
+          <li>Informe de autoevaluación con los 50 criterios, en PDF accesible, para adjuntar o enseñar a tu cliente.</li>
+          <li>La declaración en PDF accesible y HTML con tu logotipo y colores.</li>
+          <li>Recordatorio por correo para la revisión anual.</li>
+        </ul>
+        <div><button type="button" class="btn" id="proBtn">Me interesa</button></div>
+        <div class="pro-thanks" id="proThanks" hidden role="status">Gracias, lo tendremos en cuenta. Tu interés nos ayuda a decidir si lo lanzamos. Mientras tanto, la declaración es gratis.</div>
+      </section>
+    </aside>
+  </div>
+
+  <footer class="foot">
+    <p>Estructura basada en el <a href="https://administracionelectronica.gob.es/pae_Home/va/dam/jcr:da4785f6-6c22-4d67-a466-3b62c4f10056/RECOMENDACIONES-MODELO-EUROPEO-ACCESIBILIDAD-acc.pdf" target="_blank" rel="noopener">modelo de declaración de accesibilidad del Portal de Administración Electrónica</a> (Decisión de Ejecución (UE) 2018/1523).</p>
+    <p>Esta herramienta no presta asesoramiento jurídico.</p>
+    <p><strong>Privacidad:</strong> lo que escribes en el formulario no sale de tu navegador. Contamos visitas y clics con <a href="https://www.goatcounter.com/" target="_blank" rel="noopener">GoatCounter</a>, que no usa cookies ni guarda datos personales.</p>
+  </footer>
+</div>
+
+<script>
+(function () {
+  "use strict";
+
+  var CRITERIA = [
+    ["1.1.1","Contenido no textual","A","Perceptible"],
+    ["1.2.1","Solo audio y solo vídeo (grabado)","A","Perceptible"],
+    ["1.2.2","Subtítulos (grabados)","A","Perceptible"],
+    ["1.2.3","Audiodescripción o medio alternativo (grabado)","A","Perceptible"],
+    ["1.2.4","Subtítulos (en directo)","AA","Perceptible"],
+    ["1.2.5","Audiodescripción (grabado)","AA","Perceptible"],
+    ["1.3.1","Información y relaciones","A","Perceptible"],
+    ["1.3.2","Secuencia significativa","A","Perceptible"],
+    ["1.3.3","Características sensoriales","A","Perceptible"],
+    ["1.3.4","Orientación","AA","Perceptible"],
+    ["1.3.5","Identificación del propósito de la entrada","AA","Perceptible"],
+    ["1.4.1","Uso del color","A","Perceptible"],
+    ["1.4.2","Control del audio","A","Perceptible"],
+    ["1.4.3","Contraste (mínimo)","AA","Perceptible"],
+    ["1.4.4","Cambio de tamaño del texto","AA","Perceptible"],
+    ["1.4.5","Imágenes de texto","AA","Perceptible"],
+    ["1.4.10","Reajuste del contenido","AA","Perceptible"],
+    ["1.4.11","Contraste no textual","AA","Perceptible"],
+    ["1.4.12","Espaciado del texto","AA","Perceptible"],
+    ["1.4.13","Contenido con hover o foco","AA","Perceptible"],
+    ["2.1.1","Teclado","A","Operable"],
+    ["2.1.2","Sin trampas para el foco del teclado","A","Operable"],
+    ["2.1.4","Atajos de teclado de un solo carácter","A","Operable"],
+    ["2.2.1","Tiempo ajustable","A","Operable"],
+    ["2.2.2","Poner en pausa, detener, ocultar","A","Operable"],
+    ["2.3.1","Umbral de tres destellos o menos","A","Operable"],
+    ["2.4.1","Evitar bloques","A","Operable"],
+    ["2.4.2","Titulado de páginas","A","Operable"],
+    ["2.4.3","Orden del foco","A","Operable"],
+    ["2.4.4","Propósito de los enlaces (en contexto)","A","Operable"],
+    ["2.4.5","Múltiples vías","AA","Operable"],
+    ["2.4.6","Encabezados y etiquetas","AA","Operable"],
+    ["2.4.7","Foco visible","AA","Operable"],
+    ["2.5.1","Gestos del puntero","A","Operable"],
+    ["2.5.2","Cancelación del puntero","A","Operable"],
+    ["2.5.3","Etiqueta en el nombre","A","Operable"],
+    ["2.5.4","Activación mediante movimiento","A","Operable"],
+    ["3.1.1","Idioma de la página","A","Comprensible"],
+    ["3.1.2","Idioma de las partes","AA","Comprensible"],
+    ["3.2.1","Al recibir el foco","A","Comprensible"],
+    ["3.2.2","Al recibir entradas","A","Comprensible"],
+    ["3.2.3","Navegación coherente","AA","Comprensible"],
+    ["3.2.4","Identificación coherente","AA","Comprensible"],
+    ["3.3.1","Identificación de errores","A","Comprensible"],
+    ["3.3.2","Etiquetas o instrucciones","A","Comprensible"],
+    ["3.3.3","Sugerencias ante errores","AA","Comprensible"],
+    ["3.3.4","Prevención de errores (legales, financieros, datos)","AA","Comprensible"],
+    ["4.1.1","Procesamiento","A","Robusto"],
+    ["4.1.2","Nombre, función, valor","A","Robusto"],
+    ["4.1.3","Mensajes de estado","AA","Robusto"]
+  ];
+
+  var RECLAMACION = {
+    publico: "Si una vez realizada una solicitud de información accesible o una queja, esta hubiera sido desestimada, no se estuviera de acuerdo con la decisión adoptada o la respuesta no cumpliera los requisitos del Real Decreto 1112/2018, la persona interesada podrá iniciar una reclamación ante [indicar la unidad u organismo responsable de tramitar las reclamaciones y su enlace].",
+    privado: "Si la respuesta a su comunicación no le resulta satisfactoria, puede presentar una reclamación ante [indicar el organismo de consumo o la autoridad de vigilancia del mercado competente y su enlace]."
+  };
+
+  var EXAMPLE = {
+    tipo: "publico", entidad: "Mancomunidad de Servicios del Valle (ejemplo)", objeto: "web1",
+    alcance: "https://www.mancomunidad-ejemplo.es",
+    servicio: "",
+    carga: "", fuera: "Documentos PDF de actas publicados antes de 2018. Se facilitan en formato accesible a quien los solicite.",
+    fecha: new Date().toISOString().slice(0, 10), revision: "", metodo: "auto", tercero: "",
+    unidad: "Unidad de Atención Ciudadana", email: "accesibilidad@mancomunidad-ejemplo.es", formulario: "", telefono: "",
+    reclamacion: RECLAMACION.publico,
+    crit: { "1.2.2": "nocumple", "1.4.3": "nocumple", "2.4.7": "nocumple", "1.2.4": "noaplica", "1.2.5": "noaplica" },
+    where: { "1.2.2": "algunos vídeos del canal municipal", "1.4.3": "pie de página y botones secundarios", "2.4.7": "menú principal" }
+  };
+
+  var OBJ = {
+    web1:   { subj: "Este sitio web", verb: "es", conf: "conforme", poss: "su sitio web", acc: "accesible", label: "el sitio web" },
+    webN:   { subj: "Estos sitios web", verb: "son", conf: "conformes", poss: "sus sitios web", acc: "accesibles", label: "los sitios web" },
+    app1:   { subj: "Esta aplicación para dispositivos móviles", verb: "es", conf: "conforme", poss: "su aplicación para dispositivos móviles", acc: "accesible", label: "la aplicación para dispositivos móviles" },
+    webapp: { subj: "Este sitio web y esta aplicación para dispositivos móviles", verb: "son", conf: "conformes", poss: "su sitio web y su aplicación para dispositivos móviles", acc: "accesibles", label: "el sitio web y la aplicación para dispositivos móviles" }
+  };
+
+  var STORE_KEY = "declarador-borrador-v1";
+
+  // Eventos de GoatCounter (sin cookies). Sin el script cargado no hace nada.
+  function track(name, title) {
+    try { if (window.goatcounter && window.goatcounter.count) window.goatcounter.count({ path: name, title: title, event: true }); } catch (e) {}
+  }
+  var $ = function (id) { return document.getElementById(id); };
+  var form = $("f");
+  var FIELDS = ["entidad","objeto","alcance","servicio","carga","fuera","fecha","revision","metodo","tercero","unidad","email","formulario","telefono","reclamacion"];
+
+  // Lista de criterios
+  var critsEl = $("crits");
+  var groups = {};
+  CRITERIA.forEach(function (c) {
+    if (!groups[c[3]]) {
+      var g = document.createElement("div");
+      g.className = "principle";
+      g.innerHTML = "<h3>" + c[3] + "</h3>";
+      critsEl.appendChild(g);
+      groups[c[3]] = g;
+    }
+    var slug = c[0].replace(/\./g, "-");
+    var row = document.createElement("div");
+    row.className = "crit";
+    row.innerHTML =
+      '<span class="id">' + c[0] + '</span>' +
+      '<label class="name" for="c-' + slug + '">' + c[1] + '<span class="lvl">' + c[2] + '</span></label>' +
+      '<select id="c-' + slug + '" data-crit="' + c[0] + '">' +
+        '<option value="pendiente">Sin evaluar</option>' +
+        '<option value="cumple">Cumple</option>' +
+        '<option value="nocumple">No cumple</option>' +
+        '<option value="noaplica">No aplica</option>' +
+      '</select>' +
+      '<div class="where" hidden><input type="text" id="w-' + slug + '" data-where="' + c[0] + '" aria-label="Dónde falla el criterio ' + c[0] + ' (opcional)" placeholder="Dónde falla (opcional)"></div>';
+    groups[c[3]].appendChild(row);
+  });
+
+  function esc(s) {
+    return String(s == null ? "" : s).replace(/[&<>"']/g, function (ch) {
+      return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[ch];
+    });
+  }
+  function ph(text) { return '<span class="ph">[' + esc(text) + ']</span>'; }
+  function val(v, fallback) { return v && v.trim() ? esc(v.trim()) : ph(fallback); }
+  function fmtDate(iso) {
+    if (!iso) return "";
+    var p = iso.split("-");
+    var m = ["enero","febrero","marzo","abril","mayo","junio","julio","agosto","septiembre","octubre","noviembre","diciembre"];
+    return parseInt(p[2], 10) + " de " + m[parseInt(p[1], 10) - 1] + " de " + p[0];
+  }
+
+  function read() {
+    var s = { tipo: form.querySelector('input[name="tipo"]:checked').value, crit: {}, where: {} };
+    FIELDS.forEach(function (k) { s[k] = $(k).value; });
+    critsEl.querySelectorAll("select[data-crit]").forEach(function (el) { s.crit[el.dataset.crit] = el.value; });
+    critsEl.querySelectorAll("input[data-where]").forEach(function (el) { if (el.value) s.where[el.dataset.where] = el.value; });
+    return s;
+  }
+
+  function write(s) {
+    $(s.tipo === "privado" ? "tipo-priv" : "tipo-pub").checked = true;
+    FIELDS.forEach(function (k) { $(k).value = s[k] || ""; });
+    if (!$("objeto").value) $("objeto").value = "web1";
+    if (!$("metodo").value) $("metodo").value = "auto";
+    critsEl.querySelectorAll("select[data-crit]").forEach(function (el) {
+      var id = el.dataset.crit;
+      el.value = (s.crit && s.crit[id]) || (s.allCumple ? "cumple" : "pendiente");
+    });
+    critsEl.querySelectorAll("input[data-where]").forEach(function (el) { el.value = (s.where && s.where[el.dataset.where]) || ""; });
+  }
+
+  // Regla del modelo: plena solo sin ningún incumplimiento; parcial si los conformes superan a los no conformes.
+  function evaluate(s) {
+    var t = { cumple: 0, nocumple: 0, noaplica: 0, pendiente: 0 };
+    CRITERIA.forEach(function (c) { t[s.crit[c[0]] || "pendiente"]++; });
+    var fails = t.nocumple + t.pendiente;
+    t.situacion = fails === 0 ? "plena" : (t.cumple > fails ? "parcial" : "no");
+    return t;
+  }
+
+  function buildDoc(s, t) {
+    var o = OBJ[s.objeto] || OBJ.web1;
+    var pub = s.tipo === "publico";
+    var ent = val(s.entidad, "Nombre de la entidad");
+    var norma = pub
+      ? "el Real Decreto 1112/2018, de 7 de septiembre, sobre accesibilidad de los sitios web y aplicaciones para dispositivos móviles del sector público"
+      : "la Ley 11/2023, de 8 de mayo, que traspone la Directiva (UE) 2019/882 sobre los requisitos de accesibilidad de los productos y servicios";
+    var ref = pub ? "el RD 1112/2018" : "los requisitos de accesibilidad de la Ley 11/2023, tomando como referencia la norma UNE-EN 301549 (WCAG 2.1 nivel AA)";
+    var h = [];
+    h.push("<h1>Declaración de accesibilidad</h1>");
+    h.push("<p>" + ent + (pub ? " se ha comprometido" : " se compromete") + " a hacer " + o.acc + " " + o.poss + " de conformidad con " + norma + ".</p>");
+    h.push("<p>La presente declaración de accesibilidad se aplica a " + o.label + " " + val(s.alcance, "dirección o nombre") + ".</p>");
+
+    if (!pub) {
+      h.push("<h2>Descripción del servicio</h2>");
+      h.push("<p>" + val(s.servicio, "Describir el servicio y cómo se usa") + "</p>");
+    }
+
+    h.push("<h2>Situación de cumplimiento</h2>");
+    if (t.situacion === "plena") {
+      h.push("<p>" + o.subj + " " + o.verb + " plenamente " + o.conf + " con " + ref + ".</p>");
+    } else if (t.situacion === "parcial") {
+      h.push("<p>" + o.subj + " " + o.verb + " parcialmente " + o.conf + " con " + ref + " debido a la falta de conformidad de los aspectos que se indican a continuación.</p>");
+    } else {
+      h.push("<p>" + o.subj + " aún no " + o.verb + " " + o.conf + " con " + ref + ". A continuación se indican los aspectos no conformes.</p>");
+    }
+
+    var failing = CRITERIA.filter(function (c) { return s.crit[c[0]] === "nocumple"; });
+    var pending = CRITERIA.filter(function (c) { return (s.crit[c[0]] || "pendiente") === "pendiente"; });
+    var carga = s.carga && s.carga.trim(), fuera = s.fuera && s.fuera.trim();
+    if (failing.length || pending.length || carga || fuera) {
+      h.push("<h2>Contenido no accesible</h2>");
+      h.push("<p>El contenido que se recoge a continuación no es accesible por lo siguiente:</p>");
+      if (failing.length || pending.length) {
+        h.push("<h3>Falta de conformidad con " + (pub ? "el RD 1112/2018" : "la Ley 11/2023") + "</h3><ul>");
+        failing.forEach(function (c) {
+          var w = s.where[c[0]];
+          h.push("<li>" + c[0] + " " + esc(c[1]) + (w ? ": " + esc(w) : "") + ".</li>");
+        });
+        if (pending.length) {
+          h.push("<li>No se ha evaluado todavía el cumplimiento de " + pending.length + (pending.length === 1 ? " criterio" : " criterios") + ": " +
+            pending.map(function (c) { return c[0]; }).join(", ") + ".</li>");
+        }
+        h.push("</ul>");
+      }
+      if (carga) h.push("<h3>Carga desproporcionada</h3><p>" + esc(carga) + "</p>");
+      if (fuera) h.push("<h3>El contenido no entra dentro del ámbito de la legislación aplicable</h3><p>" + esc(fuera) + "</p>");
+    }
+
+    h.push("<h2>Preparación de la presente declaración de accesibilidad</h2>");
+    h.push("<p>La presente declaración fue preparada el " + (s.fecha ? esc(fmtDate(s.fecha)) : ph("fecha")) + ".</p>");
+    if (s.metodo === "tercero") {
+      h.push("<p>El método empleado para preparar la declaración ha sido una evaluación llevada a cabo por un tercero: " + val(s.tercero, "nombre de la entidad evaluadora") + ".</p>");
+    } else {
+      h.push("<p>El método empleado para preparar la declaración ha sido una autoevaluación llevada a cabo por la propia entidad.</p>");
+    }
+    if (s.revision) h.push("<p>Última revisión de la declaración: " + esc(fmtDate(s.revision)) + ".</p>");
+
+    h.push("<h2>Observaciones y datos de contacto</h2>");
+    var canal = s.formulario && s.formulario.trim()
+      ? 'a través del <a href="' + esc(s.formulario.trim()) + '">formulario de comunicaciones de accesibilidad</a> o del correo ' + val(s.email, "correo")
+      : "escribiendo a " + val(s.email, "correo de contacto");
+    h.push("<p>Puede comunicar a " + ent + " cualquier incumplimiento de los requisitos de accesibilidad, o solicitar información y contenidos que no sean accesibles, " + canal + ".</p>");
+    h.push("<p>Responsable: " + val(s.unidad, "unidad responsable") + (s.telefono && s.telefono.trim() ? ". Teléfono: " + esc(s.telefono.trim()) : "") + ".</p>");
+
+    h.push("<h2>Procedimiento de aplicación</h2>");
+    var rec = s.reclamacion && s.reclamacion.trim() ? s.reclamacion.trim() : RECLAMACION[s.tipo];
+    h.push("<p>" + esc(rec).replace(/\[([^\]]+)\]/g, '<span class="ph">[$1]</span>') + "</p>");
+    return h.join("\n");
+  }
+
+  var VERDICT = {
+    plena: ["Plenamente conforme", "No has marcado ningún incumplimiento ni criterio sin evaluar. Declara esto solo si lo has comprobado de verdad."],
+    parcial: ["Parcialmente conforme", "Hay más criterios que cumplen que incumplimientos. Es la situación más habitual."],
+    no: ["Aún no conforme", "Los incumplimientos y criterios sin evaluar igualan o superan a los que cumplen."]
+  };
+
+  function render(save) {
+    var s = read();
+    var t = evaluate(s);
+    $("servicioField").hidden = s.tipo !== "privado";
+    $("terceroField").hidden = s.metodo !== "tercero";
+    critsEl.querySelectorAll("select[data-crit]").forEach(function (el) {
+      el.dataset.v = el.value;
+      el.parentElement.querySelector(".where").hidden = el.value !== "nocumple";
+    });
+    $("tally").innerHTML =
+      '<span class="t-ok">' + t.cumple + ' cumplen</span>' +
+      '<span class="t-bad">' + t.nocumple + ' no cumplen</span>' +
+      '<span>' + t.noaplica + ' no aplican</span>' +
+      '<span class="t-pend">' + t.pendiente + ' sin evaluar</span>';
+    var v = $("verdict");
+    v.className = "verdict " + t.situacion;
+    v.innerHTML = "<strong>Situación resultante: " + VERDICT[t.situacion][0] + "</strong>" + VERDICT[t.situacion][1];
+    $("documento").innerHTML = buildDoc(s, t);
+    if (save) { try { localStorage.setItem(STORE_KEY, JSON.stringify(s)); } catch (e) {} }
+  }
+
+  function docForCopy() {
+    var clone = $("documento").cloneNode(true);
+    clone.querySelectorAll(".ph").forEach(function (el) { el.replaceWith(document.createTextNode(el.textContent)); });
+    return clone;
+  }
+
+  function copy(text, msg) {
+    var status = $("copyStatus");
+    var done = function () { status.textContent = msg; setTimeout(function () { status.textContent = ""; }, 4000); };
+    var fallback = function () {
+      var ta = document.createElement("textarea");
+      ta.value = text; ta.setAttribute("readonly", ""); ta.style.position = "fixed"; ta.style.opacity = "0";
+      document.body.appendChild(ta); ta.select();
+      var ok = false; try { ok = document.execCommand("copy"); } catch (e) {}
+      document.body.removeChild(ta);
+      if (ok) done(); else status.textContent = "No se ha podido copiar. Selecciona el texto del documento y cópialo a mano.";
+    };
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(done, fallback);
+    } else { fallback(); }
+  }
+
+  $("copyHtml").addEventListener("click", function () {
+    copy(docForCopy().innerHTML.trim() + "\n", "HTML copiado. Pégalo en la página de accesibilidad de tu web.");
+    track("copiar-html", "Copiar HTML");
+  });
+  $("copyText").addEventListener("click", function () {
+    var c = docForCopy();
+    var parts = [];
+    c.querySelectorAll("h1, h2, h3, p, li").forEach(function (el) {
+      parts.push((el.tagName === "LI" ? "- " : "") + el.textContent.trim());
+    });
+    copy(parts.join("\n\n") + "\n", "Texto copiado.");
+    track("copiar-texto", "Copiar texto");
+  });
+
+  $("proBtn").addEventListener("click", function () {
+    $("proThanks").hidden = false;
+    $("proBtn").disabled = true;
+    track("pro-me-interesa", "Pack Pro: me interesa");
+  });
+
+  $("clearBtn").addEventListener("click", function () {
+    write({ tipo: "publico", objeto: "web1", metodo: "auto", fecha: new Date().toISOString().slice(0, 10), reclamacion: RECLAMACION.publico, crit: {}, where: {} });
+    $("exampleBar").hidden = true;
+    render(true);
+    $("entidad").focus();
+  });
+
+  form.addEventListener("change", function (e) {
+    if (e.target.name === "tipo") {
+      var other = e.target.value === "publico" ? "privado" : "publico";
+      var cur = $("reclamacion").value.trim();
+      if (!cur || cur === RECLAMACION[other]) $("reclamacion").value = RECLAMACION[e.target.value];
+    }
+    render(true);
+  });
+  form.addEventListener("input", function () { render(true); });
+  form.addEventListener("submit", function (e) { e.preventDefault(); });
+
+  // Arranque: borrador guardado o ejemplo (todo lo no indicado en el ejemplo cumple).
+  var saved = null;
+  try { saved = JSON.parse(localStorage.getItem(STORE_KEY) || "null"); } catch (e) {}
+  if (saved && saved.crit) {
+    write(saved);
+    $("exampleBar").hidden = true;
+  } else {
+    var ex = JSON.parse(JSON.stringify(EXAMPLE));
+    ex.allCumple = true;
+    write(ex);
+  }
+  render();
+})();
+</script>
+<!-- GoatCounter (analítica sin cookies). -->
+<script data-goatcounter="https://jrebate.goatcounter.com/count" async src="https://gc.zgo.at/count.js"></script>
+
+</body>
+</html>
