@@ -7,3 +7,7 @@ Generador gratuito de declaraciones de accesibilidad en español. Sigue la estru
 - Analítica sin cookies con GoatCounter.
 
 La herramienta da formato a lo que declara cada entidad. No analiza webs, no sustituye una auditoría y no certifica el cumplimiento.
+
+## Licencia
+
+© 2026 Jorge Rebate Serrano. Todos los derechos reservados. Puedes insertar la herramienta publicada en tu web citando la autoría y sin cobrar por ella; no se permite copiar, modificar ni usar el código con fines comerciales. Detalles en [LICENSE.md](LICENSE.md).
